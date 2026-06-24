@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../providers/DataProvider';
 import { supabase } from '../../lib/supabaseClient';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const { atas, categorias, setAuthenticated, setCurrentUserFromSupabase } = useData();
@@ -65,19 +65,18 @@ export const LoginPage: React.FC = () => {
       <div className="hidden lg:flex lg:w-[45%] bg-[#0D1117] flex-col justify-between p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.03),transparent_60%)]" />
         <div className="relative z-10">
-          <div className="flex items-end gap-3">
-            <span className="text-white font-serif text-4xl font-black tracking-tight leading-none">SBS</span>
-            <span className="text-slate-400 text-sm font-light tracking-widest pb-1">Participações</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-white font-serif text-5xl font-black tracking-tight">SBS</span>
+            <span className="text-slate-300 text-base font-light tracking-widest">Participações</span>
           </div>
         </div>
-        <div className="relative z-10 space-y-4">
-          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em]">Painel de Administração</p>
-          <h2 className="text-white font-bold text-3xl leading-snug">
-            Gerencie atas,<br />
-            documentos financeiros<br />
-            e estatutos do Portal<br />
-            de Transparência.
+        <div className="relative z-10 space-y-3">
+          <h2 className="text-white font-bold text-4xl leading-tight">
+            Painel de<br />Administração
           </h2>
+          <p className="text-slate-400 text-sm font-light leading-relaxed">
+            Gerencie atas, documentos financeiros e estatutos do Portal de Transparência.
+          </p>
         </div>
         <div className="relative z-10 flex items-end gap-10">
           <div>
@@ -96,12 +95,6 @@ export const LoginPage: React.FC = () => {
       </div>
 
       <div className="flex-1 bg-white flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32">
-        <div className="mb-12">
-          <a href="https://atas-financeiras.vercel.app" className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-700 transition-colors font-medium">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Voltar ao portal
-          </a>
-        </div>
         <div className="max-w-sm w-full mx-auto lg:mx-0">
           <div className="lg:hidden mb-8">
             <span className="text-slate-900 font-serif text-3xl font-black tracking-tight">SBS</span>
