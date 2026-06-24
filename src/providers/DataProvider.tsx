@@ -281,8 +281,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    const saved = localStorage.getItem('ata_is_authenticated');
-    return saved !== null ? saved === 'true' : true;
+    return false;
   });
 
   const [currentUser, setCurrentUser] = useState<{
