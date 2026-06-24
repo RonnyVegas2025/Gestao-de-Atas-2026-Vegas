@@ -23,16 +23,6 @@ export const ViewAtaPage: React.FC = () => {
 
   const ata = atas.find(a => a.id === id);
 
-  // Open the first uploaded file when available, otherwise generate a PDF via print dialog
-  const handleDownloadPDF = () => {
-    const firstUrl = ata?.arquivosUrls?.[0]?.url;
-    if (firstUrl) {
-      window.open(firstUrl, '_blank');
-    } else {
-      window.print();
-    }
-  };
-
   if (!ata) {
     return (
       <div className="bg-white p-8 rounded-2xl border border-gray-100 text-center space-y-4">
@@ -120,24 +110,6 @@ export const ViewAtaPage: React.FC = () => {
           >
             <Edit className="w-4 h-4" />
             <span>Editar Informações</span>
-          </button>
-
-          {/* Export the ata as PDF via print dialog */}
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-xs font-bold transition-all cursor-pointer"
-          >
-            <FileDown className="w-4 h-4" />
-            <span>Exportar PDF</span>
-          </button>
-
-          {/* Download the attached file (or print when none) */}
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-all shadow-sm cursor-pointer"
-          >
-            <Download className="w-4 h-4" />
-            <span>Baixar Arquivo</span>
           </button>
         </div>
       </div>

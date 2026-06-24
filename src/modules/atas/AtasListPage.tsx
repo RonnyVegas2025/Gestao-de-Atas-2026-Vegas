@@ -7,7 +7,6 @@ import {
   Plus,
   Filter,
   ArrowUpDown,
-  Download,
   Eye,
   Edit,
   Trash2,
@@ -390,21 +389,6 @@ export const AtasListPage: React.FC = () => {
                           title="Editar ata"
                         >
                           <Edit className="w-4 h-4" />
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            const firstUrl = ata.arquivosUrls?.[0]?.url;
-                            if (firstUrl) {
-                              window.open(firstUrl, '_blank');
-                            } else {
-                              window.print();
-                            }
-                          }}
-                          className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50/30 rounded-lg transition-all"
-                          title="Baixar ata oficial"
-                        >
-                          <Download className="w-4 h-4" />
                         </button>
 
                         <button
