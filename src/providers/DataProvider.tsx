@@ -295,12 +295,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logActivity(currentUser.nome, "cadastrou categoria", newCat.nome);
     addNotification("Categoria criada", `Categoria ${newCat.nome} criada com sucesso`, "success");
 
-    await supabase.from('categorias').insert({
+    const { error } = await supabase.from('categorias').insert({
       id: newCat.id,
       nome: newCat.nome,
       cor: newCat.cor,
       descricao: newCat.descricao,
     });
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   const updateCategoria = (id: string, updatedFields: Partial<Categoria>) => {
@@ -316,7 +317,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logActivity(currentUser.nome, "excluiu categoria", cat.nome);
     addNotification("Categoria excluída", `Categoria ${cat.nome} excluída com sucesso`, "warning");
 
-    await supabase.from('categorias').delete().eq('id', id);
+    const { error } = await supabase.from('categorias').delete().eq('id', id);
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   // Atas Handlers
@@ -333,7 +335,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logActivity(currentUser.nome, "criou ata", newAta.numero);
     addNotification("Nova ata criada", `Ata ${newAta.numero} criada com sucesso`, "success");
 
-    await supabase.from('atas').insert({
+    const { error } = await supabase.from('atas').insert({
       id: newAta.id,
       numero: newAta.numero,
       titulo: newAta.titulo,
@@ -348,6 +350,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       status: newAta.status,
       criado_por: currentUser.nome,
     });
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
 
     // Add default uploaded PDF representation if file exists
     if (ataFields.arquivos && ataFields.arquivos.length > 0) {
@@ -376,7 +379,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       addNotification("Ata atualizada", `Ata ${ata.numero} foi modificada`, "info");
     }
 
-    await supabase.from('atas').update({
+    const { error } = await supabase.from('atas').update({
       titulo: updatedFields.titulo,
       categoria_id: updatedFields.categoriaId,
       data: updatedFields.data,
@@ -389,6 +392,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       status: updatedFields.status,
       atualizado_em: now,
     }).eq('id', id);
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   const deleteAta = async (id: string, user: string) => {
@@ -411,7 +415,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logActivity(user, "excluiu documento", ata.numero);
     addNotification("Ata removida", `Ata ${ata.numero} foi movida para a lixeira`, "warning");
 
-    await supabase.from('atas').delete().eq('id', id);
+    const { error } = await supabase.from('atas').delete().eq('id', id);
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   // Uploads Handlers
@@ -483,7 +488,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logActivity(currentUser.nome, "cadastrou usuário", newUser.nome);
     addNotification("Usuário cadastrado", `Novo usuário ${newUser.nome} criado`, "success");
 
-    await supabase.from('usuarios').insert({
+    const { error } = await supabase.from('usuarios').insert({
       id: newUser.id,
       nome: newUser.nome,
       email: newUser.email,
@@ -492,6 +497,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       perfil: newUser.perfil,
       status: newUser.status,
     });
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   const updateUsuario = async (id: string, updatedFields: Partial<Usuario>) => {
@@ -507,7 +513,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    await supabase.from('usuarios').update(updatedFields).eq('id', id);
+    const { error } = await supabase.from('usuarios').update(updatedFields).eq('id', id);
+    if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
   const toggleUsuarioStatus = (id: string) => {
