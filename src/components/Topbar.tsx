@@ -386,7 +386,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleMobileMenu }) => {
             <img 
               src={currentUser.foto || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
               alt={currentUser.nome} 
-              className="w-8.5 h-8.5 rounded-lg object-cover shadow-xs border border-white"
+              className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0"
             />
             <div className="text-left hidden md:flex flex-col select-none pr-1 focus:outline-none">
               <span className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[110px]">{currentUser.nome}</span>

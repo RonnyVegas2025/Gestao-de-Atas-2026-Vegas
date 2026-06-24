@@ -102,8 +102,8 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         {/* LOGO AREA */}
         <div className="p-6 border-b border-slate-700/50 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold select-none text-base">G</div>
-            <span className="text-white font-semibold text-lg tracking-tight">GestãoAtas</span>
+            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold select-none text-base">S</div>
+            <span className="text-white font-semibold text-lg tracking-tight">SBS Participações</span>
           </div>
         </div>
 
