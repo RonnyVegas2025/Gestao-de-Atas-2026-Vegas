@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../../providers/DataProvider';
+import { supabase } from '../../lib/supabaseClient';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User, 
@@ -25,7 +26,7 @@ const DEFAULT_AVATAR =
   "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
 
 export const PerfilPage: React.FC = () => {
-  const { currentUser, updateCurrentUserProfile, changePassword } = useData();
+  const { currentUser, updateCurrentUserProfile } = useData();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -81,14 +82,14 @@ export const PerfilPage: React.FC = () => {
     e.target.value = '';
   };
 
-  const handlePasswordChange = (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
     setPasswordSuccess(false);
 
     // Validações
-    if (!senhaAtual || !novaSenha || !confirmarSenha) {
-      setPasswordError('Todos os campos são obrigatórios.');
+    if (!novaSenha || !confirmarSenha) {
+      setPasswordError('Preencha a nova senha e a confirmação.');
       return;
     }
 
@@ -102,8 +103,10 @@ export const PerfilPage: React.FC = () => {
       return;
     }
 
-    const result = changePassword(senhaAtual, novaSenha);
-    if (result.success) {
+    const { error } = await supabase.auth.updateUser({ password: novaSenha });
+    if (error) {
+      setPasswordError('Erro ao alterar senha. Tente novamente.');
+    } else {
       setPasswordSuccess(true);
       setSenhaAtual('');
       setNovaSenha('');
@@ -112,8 +115,6 @@ export const PerfilPage: React.FC = () => {
         setIsPasswordModalOpen(false);
         setPasswordSuccess(false);
       }, 2000);
-    } else {
-      setPasswordError(result.error || 'Erro ao alterar a senha.');
     }
   };
 
@@ -403,7 +404,6 @@ export const PerfilPage: React.FC = () => {
                     <input
                       id="original-pwd"
                       type={showSenhaAtual ? 'text' : 'password'}
-                      required
                       placeholder="Senha atual utilizada"
                       value={senhaAtual}
                       onChange={(e) => setSenhaAtual(e.target.value)}
