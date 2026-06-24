@@ -409,8 +409,11 @@ export const RelatoriosPage: React.FC = () => {
 
           {/* Quick analysis output info box */}
           <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-xs text-blue-800 font-medium leading-relaxed mt-4">
-            <span className="font-extrabold block mb-1">Análise de Tendência de Atas</span>
-            Ficou identificado um aumento sustentável de 15% na lavratura de documentos oficiais para pautas financeiras e orçamentais no trimestre corrente, devido à aprovação de investimentos de fomento à infraestrutura de TI.
+            <p className="text-sm font-bold text-blue-700">Resumo do Sistema</p>
+            <p className="text-xs text-blue-600 mt-1">
+              {atas.length} atas cadastradas em {categorias.length} categorias.
+              {atas.filter(a => a.status === 'Publicada').length} publicadas e {atas.filter(a => a.status === 'Rascunho').length} em rascunho.
+            </p>
           </div>
         </div>
 

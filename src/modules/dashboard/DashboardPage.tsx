@@ -566,15 +566,6 @@ export const DashboardPage: React.FC = () => {
                           <Edit className="w-4 h-4" />
                         </button>
 
-                        {/* Baixar */}
-                        <button
-                          onClick={() => simulateDownload(ata.id, ata.titulo)}
-                          className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all cursor-pointer font-medium"
-                          title="Baixar ata oficial"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
-
                         {/* Eliminar (Soft delete) */}
                         <button
                           onClick={() => setShowDeleteModal(ata.id)}
