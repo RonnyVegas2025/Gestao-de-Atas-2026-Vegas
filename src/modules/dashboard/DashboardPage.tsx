@@ -33,18 +33,18 @@ import { motion } from 'motion/react';
 
 // Monthly data for published minutes
 const MONTHLY_DATA = [
-  { name: 'Jan', atas: 29 },
-  { name: 'Fev', atas: 45 },
-  { name: 'Mar', atas: 50 },
-  { name: 'Abr', atas: 48 },
-  { name: 'Mai', atas: 63 },
-  { name: 'Jun', atas: 84 }, // highlighted in tooltips
-  { name: 'Jul', atas: 51 },
-  { name: 'Ago', atas: 62 },
-  { name: 'Set', atas: 42 },
-  { name: 'Out', atas: 76 },
-  { name: 'Nov', atas: 80 },
-  { name: 'Dez', atas: 62 },
+  { name: 'Jan', atas: 0 },
+  { name: 'Fev', atas: 0 },
+  { name: 'Mar', atas: 0 },
+  { name: 'Abr', atas: 0 },
+  { name: 'Mai', atas: 0 },
+  { name: 'Jun', atas: 0 },
+  { name: 'Jul', atas: 0 },
+  { name: 'Ago', atas: 0 },
+  { name: 'Set', atas: 0 },
+  { name: 'Out', atas: 0 },
+  { name: 'Nov', atas: 0 },
+  { name: 'Dez', atas: 0 },
 ];
 
 export const DashboardPage: React.FC = () => {
@@ -67,28 +67,20 @@ export const DashboardPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
 
-  // Derive counts dynamically to show exact/active content
-  const totalAtasCount = atas.length + 1243; // base 1248 offset to match picture but dynamically link
-  const categoriesCount = categorias.length + 13; // offset to match picture
-  const activeUsersCount = usuarios.filter(u => u.status === 'Ativo').length + 28; // offset to match picture
+  // Derive counts dynamically from real DataProvider state
+  const totalAtasCount = atas.length;
+  const categoriesCount = categorias.length;
+  const activeUsersCount = usuarios.length;
 
-  // Calculate stats for Pie Chart
-  // We want to count how many existing atas we have per category.
-  // To match the image percentages precisely, we can fall back to the image values if the db is clean, or calculate on real db state! Let's do a beautiful hybrid.
+  // Calculate stats for Pie Chart — real percentages per category
   const categoryCounts = categorias.map((cat) => {
-    const countInDb = atas.filter(a => a.categoriaId === cat.id).length;
-    let baselinePct = 10;
-    let baselineVal = 125;
-    if (cat.nome === 'Financeiro') { baselinePct = 35; baselineVal = 437; }
-    else if (cat.nome === 'Administrativo') { baselinePct = 25; baselineVal = 312; }
-    else if (cat.nome === 'Licitações') { baselinePct = 20; baselineVal = 249; }
-    else if (cat.nome === 'Contratos') { baselinePct = 10; baselineVal = 125; }
-    else if (cat.nome === 'Reuniões') { baselinePct = 10; baselineVal = 125; }
+    const value = atas.filter(a => a.categoriaId === cat.id).length;
+    const percentage = atas.length > 0 ? Math.round((value / atas.length) * 100) : 0;
 
     return {
       name: cat.nome,
-      value: baselineVal + countInDb * 11, // dynamically grows
-      percentage: baselinePct,
+      value,
+      percentage,
       color: cat.cor,
     };
   });
@@ -346,7 +338,7 @@ export const DashboardPage: React.FC = () => {
               {/* Central counter */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-[10px] text-slate-400 uppercase tracking-widest leading-none font-semibold">Total</span>
-                <span className="text-lg font-bold text-slate-900 mt-1">1.248</span>
+                <span className="text-lg font-bold text-slate-900 mt-1">{totalAtasCount.toLocaleString('pt-BR')}</span>
               </div>
             </div>
 
