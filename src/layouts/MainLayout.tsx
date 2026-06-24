@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   FileText,
   FolderTree,
-  UploadCloud,
   Trash2,
   Users,
   ShieldAlert,
@@ -142,14 +141,6 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   icon={<FolderTree className="w-4 h-4" />}
                   label="Categorias"
                   active={currentPath === '/categorias'}
-                />
-              </li>
-              <li>
-                <SidebarItem
-                  to="/uploads"
-                  icon={<UploadCloud className="w-4 h-4" />}
-                  label="Uploads"
-                  active={currentPath === '/uploads'}
                 />
               </li>
               <li>

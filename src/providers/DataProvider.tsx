@@ -70,11 +70,9 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 // Initial Categories
 const INITIAL_CATEGORIAS: Categoria[] = [
-  { id: "cat-financeiro", nome: "Financeiro", cor: "purple", descricao: "Assuntos financeiros, orçamentos, auditorias e contas do exercício.", criadoEm: "2025-01-10" },
-  { id: "cat-administrativo", nome: "Administrativo", cor: "indigo", descricao: "Decisões administrativas, organograma, TI e recursos humanos.", criadoEm: "2025-01-15" },
-  { id: "cat-licitacoes", nome: "Licitações", cor: "emerald", descricao: "Processos de concorrência, licitações públicas e editais.", criadoEm: "2025-02-01" },
-  { id: "cat-contratos", nome: "Contratos", cor: "sky", descricao: "Acompanhamento de obrigações e termos contratuais com fornecedores.", criadoEm: "2025-02-15" },
-  { id: "cat-reunioes", nome: "Reuniões", cor: "rose", descricao: "Atas de reuniões gerais com coordenadores e assembleias regulares.", criadoEm: "2025-03-01" },
+  { id: 'cat-financeiro', nome: 'Financeiro', cor: 'purple', descricao: 'Documentos e registros financeiros.', criadoEm: '2026-01-01' },
+  { id: 'cat-atas', nome: 'Atas', cor: 'indigo', descricao: 'Atas de reuniões e assembleias.', criadoEm: '2026-01-01' },
+  { id: 'cat-estatuto', nome: 'Estatuto', cor: 'emerald', descricao: 'Estatuto e normas institucionais.', criadoEm: '2026-01-01' },
 ];
 
 // Initial Atas
@@ -95,9 +93,9 @@ const INITIAL_NOTIFICATIONS: Notification[] = [];
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Reset dados fictícios — rodar uma vez
-  if (localStorage.getItem('ata_data_version') !== '2') {
+  if (localStorage.getItem('ata_data_version') !== '3') {
     Object.keys(localStorage).filter(k => k.startsWith('ata_')).forEach(k => localStorage.removeItem(k));
-    localStorage.setItem('ata_data_version', '2');
+    localStorage.setItem('ata_data_version', '3');
   }
 
   const [categorias, setCategorias] = useState<Categoria[]>(() => {
