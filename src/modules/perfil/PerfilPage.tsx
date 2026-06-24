@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../../providers/DataProvider';
 import { motion, AnimatePresence } from 'motion/react';
@@ -21,14 +21,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-const AVATAR_OPTIONS = [
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-];
+const DEFAULT_AVATAR =
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
 
 export const PerfilPage: React.FC = () => {
   const { currentUser, updateCurrentUserProfile, changePassword } = useData();
@@ -37,9 +31,9 @@ export const PerfilPage: React.FC = () => {
 
   // Form States
   const [nome, setNome] = useState(currentUser.nome);
-  const [foto, setFoto] = useState(currentUser.foto || AVATAR_OPTIONS[0]);
-  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [foto, setFoto] = useState(currentUser.foto || DEFAULT_AVATAR);
   const [isSaved, setIsSaved] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Password Modal State
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -70,6 +64,21 @@ export const PerfilPage: React.FC = () => {
     updateCurrentUserProfile(nome, foto);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
+  };
+
+  // Reads the chosen image, converts to base64 and saves it as profile photo
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setFoto(base64);
+      updateCurrentUserProfile(nome, base64);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so selecting the same file again still triggers change
+    e.target.value = '';
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
@@ -131,12 +140,19 @@ export const PerfilPage: React.FC = () => {
               <button
                 id="btn-trigger-avatar"
                 type="button"
-                onClick={() => setShowAvatarSelector(true)}
+                onClick={() => fileInputRef.current?.click()}
                 className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-slate-900 border border-slate-700 text-white flex items-center justify-center hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Alterar foto de perfil"
               >
                 <Camera className="w-4 h-4" />
               </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarFileChange}
+                className="hidden"
+              />
             </div>
 
             <div className="mt-4 space-y-1 w-full">
@@ -322,66 +338,6 @@ export const PerfilPage: React.FC = () => {
 
         </div>
       </div>
-
-      {/* AVATAR SELECTOR DRAWER/MODAL */}
-      <AnimatePresence>
-        {showAvatarSelector && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowAvatarSelector(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
-            />
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-2xl max-w-sm w-full p-6 border border-slate-100 shadow-2xl relative z-10 space-y-4"
-            >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h4 className="font-bold text-slate-900 text-sm">Selecione uma imagem de exibição</h4>
-                <button
-                  onClick={() => setShowAvatarSelector(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 cursor-pointer"
-                >
-                  <X className="w-4.5 h-4.5" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3.5 py-2">
-                {AVATAR_OPTIONS.map((av, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => {
-                      setFoto(av);
-                      setShowAvatarSelector(false);
-                    }}
-                    className={`relative rounded-full overflow-hidden border-2 transition-all p-0.5 cursor-pointer hover:scale-105 ${
-                      foto === av ? 'border-blue-600 scale-102 ring-2 ring-blue-100' : 'border-slate-100 hover:border-slate-300'
-                    }`}
-                  >
-                    <img src={av} alt={`Opção de avatar ${index + 1}`} className="w-16 h-16 rounded-full object-cover" />
-                  </button>
-                ))}
-              </div>
-
-              <div className="border-t border-slate-100 pt-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowAvatarSelector(false)}
-                  className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-200 transition-colors uppercase tracking-wider cursor-pointer"
-                >
-                  Fechar
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* ALTERAR SENHA MODAL */}
       <AnimatePresence>

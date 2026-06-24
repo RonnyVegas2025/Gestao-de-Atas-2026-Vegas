@@ -43,42 +43,36 @@ export const RelatoriosPage: React.FC = () => {
 
   // Static Data lists for beautiful trend lines
   const downloadsTrendData = [
-    { name: 'Jan', downloads: 350 },
-    { name: 'Fev', downloads: 410 },
-    { name: 'Mar', downloads: 590 },
-    { name: 'Abr', downloads: 480 },
-    { name: 'Mai', downloads: 720 },
-    { name: 'Jun', downloads: 910 },
-    { name: 'Jul', downloads: 680 },
-    { name: 'Ago', downloads: 820 },
-    { name: 'Set', downloads: 540 },
-    { name: 'Out', downloads: 780 },
-    { name: 'Nov', downloads: 850 },
-    { name: 'Dez', downloads: 990 },
+    { name: 'Jan', downloads: 0 },
+    { name: 'Fev', downloads: 0 },
+    { name: 'Mar', downloads: 0 },
+    { name: 'Abr', downloads: 0 },
+    { name: 'Mai', downloads: 0 },
+    { name: 'Jun', downloads: 0 },
+    { name: 'Jul', downloads: 0 },
+    { name: 'Ago', downloads: 0 },
+    { name: 'Set', downloads: 0 },
+    { name: 'Out', downloads: 0 },
+    { name: 'Nov', downloads: 0 },
+    { name: 'Dez', downloads: 0 },
   ];
 
   const uploadsTrendData = [
-    { name: 'Q1 25', uploads: 35 },
-    { name: 'Q2 25', uploads: 45 },
-    { name: 'Q3 25', uploads: 30 },
-    { name: 'Q4 25', uploads: 55 },
-    { name: 'Q1 26', uploads: 68 },
-    { name: 'Q2 26', uploads: 84 },
+    { name: 'Q1 25', uploads: 0 },
+    { name: 'Q2 25', uploads: 0 },
+    { name: 'Q3 25', uploads: 0 },
+    { name: 'Q4 25', uploads: 0 },
+    { name: 'Q1 26', uploads: 0 },
+    { name: 'Q2 26', uploads: 0 },
   ];
 
   // Derive counts by categories for Pie Chart
   const categoryChartData = categorias.map((cat) => {
     const count = atas.filter(a => a.categoriaId === cat.id).length;
-    let baseOffset = 10;
-    if (cat.nome === 'Financeiro') baseOffset = 437;
-    if (cat.nome === 'Administrativo') baseOffset = 312;
-    if (cat.nome === 'Licitações') baseOffset = 249;
-    if (cat.nome === 'Contratos') baseOffset = 125;
-    if (cat.nome === 'Reuniões') baseOffset = 125;
 
     return {
       name: cat.nome,
-      value: baseOffset + count * 5,
+      value: count,
       cor: cat.cor,
     };
   });
@@ -97,18 +91,18 @@ export const RelatoriosPage: React.FC = () => {
 
   // Monthly published minutes matching dashboard
   const periodChartData = [
-    { name: 'Jan', publicadas: 29, rascunhos: 5 },
-    { name: 'Fev', publicadas: 45, rascunhos: 8 },
-    { name: 'Mar', publicadas: 50, rascunhos: 12 },
-    { name: 'Abr', publicadas: 48, rascunhos: 7 },
-    { name: 'Mai', publicadas: 63, rascunhos: 11 },
-    { name: 'Jun', publicadas: 84, rascunhos: 15 },
-    { name: 'Jul', publicadas: 51, rascunhos: 8 },
-    { name: 'Ago', publicadas: 62, rascunhos: 10 },
-    { name: 'Set', publicadas: 42, rascunhos: 5 },
-    { name: 'Out', publicadas: 76, rascunhos: 18 },
-    { name: 'Nov', publicadas: 80, rascunhos: 14 },
-    { name: 'Dez', publicadas: 62, rascunhos: 9 },
+    { name: 'Jan', publicadas: 0, rascunhos: 0 },
+    { name: 'Fev', publicadas: 0, rascunhos: 0 },
+    { name: 'Mar', publicadas: 0, rascunhos: 0 },
+    { name: 'Abr', publicadas: 0, rascunhos: 0 },
+    { name: 'Mai', publicadas: 0, rascunhos: 0 },
+    { name: 'Jun', publicadas: 0, rascunhos: 0 },
+    { name: 'Jul', publicadas: 0, rascunhos: 0 },
+    { name: 'Ago', publicadas: 0, rascunhos: 0 },
+    { name: 'Set', publicadas: 0, rascunhos: 0 },
+    { name: 'Out', publicadas: 0, rascunhos: 0 },
+    { name: 'Nov', publicadas: 0, rascunhos: 0 },
+    { name: 'Dez', publicadas: 0, rascunhos: 0 },
   ];
 
   // Export spreadsheet mock files
@@ -356,9 +350,9 @@ export const RelatoriosPage: React.FC = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
-                    { name: 'Administrador', count: usuarios.filter(u => u.perfil === 'Administrador').length + 2 },
-                    { name: 'Editor', count: usuarios.filter(u => u.perfil === 'Editor').length + 6 },
-                    { name: 'Leitor', count: usuarios.filter(u => u.perfil === 'Leitor').length + 24 },
+                    { name: 'Administrador', count: usuarios.filter(u => u.perfil === 'Administrador').length },
+                    { name: 'Editor', count: usuarios.filter(u => u.perfil === 'Editor').length },
+                    { name: 'Leitor', count: usuarios.filter(u => u.perfil === 'Leitor').length },
                   ]}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
@@ -396,7 +390,7 @@ export const RelatoriosPage: React.FC = () => {
             <div className="space-y-3 font-semibold text-xs">
               <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-gray-100">
                 <span className="text-gray-500 font-medium">Atas Ativas</span>
-                <span className="text-gray-900 font-bold">{atas.length + 1243} Documentos</span>
+                <span className="text-gray-900 font-bold">{atas.length} Documentos</span>
               </div>
               <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-gray-100">
                 <span className="text-gray-500 font-medium">Downloads de Suporte</span>
@@ -404,11 +398,11 @@ export const RelatoriosPage: React.FC = () => {
               </div>
               <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-gray-100">
                 <span className="text-gray-500 font-medium">Credenciados no conselho</span>
-                <span className="text-gray-900 font-bold">{usuarios.length + 28} Colaboradores</span>
+                <span className="text-gray-900 font-bold">{usuarios.length} Colaboradores</span>
               </div>
               <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-gray-100">
                 <span className="text-gray-500 font-medium font-semibold">Pastas de Categoria</span>
-                <span className="text-blue-600 font-bold">{categorias.length + 13} Categorias</span>
+                <span className="text-blue-600 font-bold">{categorias.length} Categorias</span>
               </div>
             </div>
           </div>

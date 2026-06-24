@@ -64,16 +64,9 @@ export const CategoriasPage: React.FC = () => {
     setEditingId(null);
   };
 
-  // Counting dynamic minutes linked in DB
-  const getMinutesCount = (id: string, name: string) => {
-    const directCount = atas.filter(a => a.categoriaId === id).length;
-    // adding a base simulation to match dashboard 1248 sum nicely
-    if (name === 'Financeiro') return directCount + 437;
-    if (name === 'Administrativo') return directCount + 312;
-    if (name === 'Licitações') return directCount + 249;
-    if (name === 'Contratos') return directCount + 125;
-    if (name === 'Reuniões') return directCount + 125;
-    return directCount;
+  // Counting real minutes linked in DB
+  const getMinutesCount = (id: string) => {
+    return atas.filter(a => a.categoriaId === id).length;
   };
 
   const getColorPoint = (corName: string) => {
@@ -252,7 +245,7 @@ export const CategoriasPage: React.FC = () => {
                       {/* Atas count */}
                       <td className="py-4-5 px-6">
                         <span className="px-2 py-1 bg-gray-100 rounded text-gray-600 font-bold font-mono">
-                          {getMinutesCount(cat.id, cat.nome)} Atas
+                          {getMinutesCount(cat.id)} Atas
                         </span>
                       </td>
 

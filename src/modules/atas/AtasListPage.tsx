@@ -27,6 +27,9 @@ export const AtasListPage: React.FC = () => {
 
   const navigate = useNavigate();
 
+  // Unique years derived from registered atas
+  const availableYears = [...new Set(atas.map(a => a.data.split('-')[0]))].sort();
+
   // Filters & State
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
@@ -87,9 +90,8 @@ export const AtasListPage: React.FC = () => {
 
       // 4. Period Match
       if (selectedPeriod !== 'Todos') {
-        const ataYear = new Date(ata.data).getFullYear();
-        if (selectedPeriod === '2025' && ataYear !== 2025) return false;
-        if (selectedPeriod === '2026' && ataYear !== 2026) return false;
+        const ataYear = ata.data.split('-')[0];
+        if (ataYear !== selectedPeriod) return false;
       }
 
       return true;
@@ -290,8 +292,9 @@ export const AtasListPage: React.FC = () => {
                 className="w-full text-xs pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-100 focus:border-blue-500 font-medium"
               >
                 <option value="Todos">Sempre</option>
-                <option value="2026">Ano Reunião 2026</option>
-                <option value="2025">Ano Reunião 2025</option>
+                {availableYears.map(year => (
+                  <option key={year} value={year}>Ano Reunião {year}</option>
+                ))}
               </select>
             </div>
           </div>
