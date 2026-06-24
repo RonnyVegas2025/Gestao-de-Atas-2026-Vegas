@@ -394,8 +394,9 @@ export const AtasListPage: React.FC = () => {
 
                         <button
                           onClick={() => {
-                            if (ata.arquivoUrl) {
-                              window.open(ata.arquivoUrl, '_blank');
+                            const firstUrl = ata.arquivosUrls?.[0]?.url;
+                            if (firstUrl) {
+                              window.open(firstUrl, '_blank');
                             } else {
                               window.print();
                             }

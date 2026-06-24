@@ -23,10 +23,11 @@ export const ViewAtaPage: React.FC = () => {
 
   const ata = atas.find(a => a.id === id);
 
-  // Open the uploaded file when available, otherwise generate a PDF via print dialog
+  // Open the first uploaded file when available, otherwise generate a PDF via print dialog
   const handleDownloadPDF = () => {
-    if (ata?.arquivoUrl) {
-      window.open(ata.arquivoUrl, '_blank');
+    const firstUrl = ata?.arquivosUrls?.[0]?.url;
+    if (firstUrl) {
+      window.open(firstUrl, '_blank');
     } else {
       window.print();
     }
@@ -177,12 +178,7 @@ export const ViewAtaPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Watermark layer (behind text) */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.035] select-none z-0">
-                <Building className="w-96 h-96 rotate-45 text-black" />
-              </div>
-
-              {/* PDF Content (Z-10 to stay overlayed on watermark) */}
+              {/* PDF Content */}
               <div className="space-y-6 mt-8 relative z-10 leading-relaxed text-xs">
                 
                 {/* Header title */}
@@ -338,9 +334,9 @@ export const ViewAtaPage: React.FC = () => {
               <span>Anexos Oficiais</span>
             </h3>
 
-            {ata.arquivos && ata.arquivos.length > 0 ? (
+            {ata.arquivosUrls && ata.arquivosUrls.length > 0 ? (
               <div className="space-y-2">
-                {ata.arquivos.map((file, idx) => (
+                {ata.arquivosUrls.map((file, idx) => (
                   <div
                     key={idx}
                     className="flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:bg-blue-50/50 hover:border-blue-100 transition-all group text-xs text-left"
@@ -351,19 +347,18 @@ export const ViewAtaPage: React.FC = () => {
                       </div>
                       <div className="min-w-0">
                         <span className="block font-bold text-gray-800 truncate group-hover:text-indigo-700">
-                          {file.name}
+                          {file.nome}
                         </span>
                         <span className="text-[10px] text-gray-400 font-medium block mt-0.5">
-                          Formato {file.type.toUpperCase()} • {file.size}
+                          {file.tipo || 'Arquivo'}
                         </span>
                       </div>
                     </div>
 
-                    {/* Download attachment in a new tab */}
+                    {/* Download this attachment in a new tab */}
                     <button
-                      onClick={() => ata.arquivoUrl && window.open(ata.arquivoUrl, '_blank')}
-                      disabled={!ata.arquivoUrl}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => window.open(file.url, '_blank')}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer shrink-0"
                       title="Baixar anexo"
                     >
                       <Download className="w-4 h-4" />

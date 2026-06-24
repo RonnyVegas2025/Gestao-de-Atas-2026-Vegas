@@ -39,7 +39,7 @@ export const NovaAtaPage: React.FC = () => {
 
   // Upload State
   const [arquivos, setArquivos] = useState<{ name: string; size: string; type: string; url: string }[]>([]);
-  const [arquivoUrl, setArquivoUrl] = useState('');
+  const [arquivosUrls, setArquivosUrls] = useState<{ nome: string; url: string; tipo: string }[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -102,7 +102,7 @@ export const NovaAtaPage: React.FC = () => {
           type: ext,
           url,
         }]);
-        setArquivoUrl(url);
+        setArquivosUrls(prev => [...prev, { nome: file.name, url, tipo: file.type }]);
       }
     }
     setIsUploading(false);
@@ -125,11 +125,8 @@ export const NovaAtaPage: React.FC = () => {
   };
 
   const handleRemoveFile = (index: number) => {
-    setArquivos(prev => {
-      const next = prev.filter((_, i) => i !== index);
-      setArquivoUrl(next.length > 0 ? next[next.length - 1].url : '');
-      return next;
-    });
+    setArquivos(prev => prev.filter((_, i) => i !== index));
+    setArquivosUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   // Submit form handler
@@ -157,7 +154,7 @@ export const NovaAtaPage: React.FC = () => {
       participantes,
       arquivos,
       status,
-      arquivoUrl,
+      arquivosUrls,
     });
 
     navigate('/atas');

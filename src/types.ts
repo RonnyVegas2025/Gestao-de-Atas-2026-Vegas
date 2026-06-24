@@ -25,7 +25,7 @@ export interface Ata {
     url: string;
   }[];
   status: 'Publicada' | 'Rascunho';
-  arquivoUrl?: string;
+  arquivosUrls?: { nome: string; url: string; tipo: string }[];
   criadoEm: string;
   atualizadoEm: string;
   downloadsCount: number;

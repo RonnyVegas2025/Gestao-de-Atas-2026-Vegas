@@ -196,7 +196,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           participantes: a.participantes || [],
           arquivos: a.arquivos || [],
           status: a.status,
-          arquivoUrl: a.arquivo_url || '',
+          arquivosUrls: a.arquivo_url ? JSON.parse(a.arquivo_url) : [],
           criadoEm: a.criado_em,
           atualizadoEm: a.atualizado_em ?? a.criado_em,
           downloadsCount: a.downloads_count ?? 0,
@@ -349,7 +349,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       participantes: newAta.participantes,
       conteudo: newAta.descricao,
       status: newAta.status,
-      arquivo_url: newAta.arquivoUrl || '',
+      arquivo_url: JSON.stringify(newAta.arquivosUrls || []),
       criado_por: currentUser.nome,
     });
     if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
@@ -392,7 +392,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       participantes: updatedFields.participantes,
       conteudo: updatedFields.descricao,
       status: updatedFields.status,
-      arquivo_url: updatedFields.arquivoUrl,
+      arquivo_url: JSON.stringify(updatedFields.arquivosUrls || []),
       atualizado_em: now,
     }).eq('id', id);
     if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
