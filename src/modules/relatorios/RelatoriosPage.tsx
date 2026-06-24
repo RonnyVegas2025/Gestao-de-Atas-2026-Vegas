@@ -89,21 +89,20 @@ export const RelatoriosPage: React.FC = () => {
     }
   };
 
-  // Monthly published minutes matching dashboard
-  const periodChartData = [
-    { name: 'Jan', publicadas: 0, rascunhos: 0 },
-    { name: 'Fev', publicadas: 0, rascunhos: 0 },
-    { name: 'Mar', publicadas: 0, rascunhos: 0 },
-    { name: 'Abr', publicadas: 0, rascunhos: 0 },
-    { name: 'Mai', publicadas: 0, rascunhos: 0 },
-    { name: 'Jun', publicadas: 0, rascunhos: 0 },
-    { name: 'Jul', publicadas: 0, rascunhos: 0 },
-    { name: 'Ago', publicadas: 0, rascunhos: 0 },
-    { name: 'Set', publicadas: 0, rascunhos: 0 },
-    { name: 'Out', publicadas: 0, rascunhos: 0 },
-    { name: 'Nov', publicadas: 0, rascunhos: 0 },
-    { name: 'Dez', publicadas: 0, rascunhos: 0 },
-  ];
+  // Monthly published minutes computed dynamically from the registered atas
+  const selectedYear = new Date().getFullYear();
+
+  const periodChartData = Array.from({ length: 12 }, (_, i) => ({
+    month: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][i],
+    publicadas: atas.filter(a => {
+      const d = new Date(a.data + 'T00:00:00');
+      return d.getMonth() === i && d.getFullYear() === selectedYear && a.status === 'Publicada';
+    }).length,
+    rascunhos: atas.filter(a => {
+      const d = new Date(a.data + 'T00:00:00');
+      return d.getMonth() === i && d.getFullYear() === selectedYear && a.status === 'Rascunho';
+    }).length,
+  }));
 
   // Export spreadsheet mock files
   const handleExportExcelData = () => {
@@ -113,7 +112,7 @@ export const RelatoriosPage: React.FC = () => {
     if (activeReport === 'periodo') {
       csvStr += "Mês,Atas Publicadas,Atas em Rascunho\n";
       periodChartData.forEach(r => {
-        csvStr += `${r.name},${r.publicadas},${r.rascunhos}\n`;
+        csvStr += `${r.month},${r.publicadas},${r.rascunhos}\n`;
       });
     } else if (activeReport === 'categoria') {
       csvStr += "Categoria,Volume Total de Atas Estudo\n";
@@ -153,7 +152,7 @@ export const RelatoriosPage: React.FC = () => {
     if (activeReport === 'periodo') {
       pdfStr += `RESUMO DE ATAS POR PERÍODO\n`;
       periodChartData.forEach(p => {
-        pdfStr += `Mês: ${p.name} | Publicadas: ${p.publicadas} Atas | Rascunhos: ${p.rascunhos}\n`;
+        pdfStr += `Mês: ${p.month} | Publicadas: ${p.publicadas} Atas | Rascunhos: ${p.rascunhos}\n`;
       });
     } else if (activeReport === 'categoria') {
       pdfStr += `DISTRIBUIÇÃO DE DOCUMENTOS POR CATEGORIAS\n`;
@@ -300,7 +299,7 @@ export const RelatoriosPage: React.FC = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={periodChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                  <XAxis dataKey="name" fontSize={11} stroke="#9ca3af" axisLine={false} tickLine={false} />
+                  <XAxis dataKey="month" fontSize={11} stroke="#9ca3af" axisLine={false} tickLine={false} />
                   <YAxis fontSize={11} stroke="#9ca3af" axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ borderRadius: '8px', fontSize: '11px', border: '1px solid #f3f4f6' }} />
                   <Bar dataKey="publicadas" fill="#2563eb" radius={[4, 4, 0, 0]} name="Publicadas" />

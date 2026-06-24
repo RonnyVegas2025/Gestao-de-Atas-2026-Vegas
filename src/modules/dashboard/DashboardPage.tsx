@@ -31,22 +31,6 @@ import {
 } from 'recharts';
 import { motion } from 'motion/react';
 
-// Monthly data for published minutes
-const MONTHLY_DATA = [
-  { name: 'Jan', atas: 0 },
-  { name: 'Fev', atas: 0 },
-  { name: 'Mar', atas: 0 },
-  { name: 'Abr', atas: 0 },
-  { name: 'Mai', atas: 0 },
-  { name: 'Jun', atas: 0 },
-  { name: 'Jul', atas: 0 },
-  { name: 'Ago', atas: 0 },
-  { name: 'Set', atas: 0 },
-  { name: 'Out', atas: 0 },
-  { name: 'Nov', atas: 0 },
-  { name: 'Dez', atas: 0 },
-];
-
 export const DashboardPage: React.FC = () => {
   const {
     atas,
@@ -125,6 +109,21 @@ export const DashboardPage: React.FC = () => {
       setShowDeleteModal(null);
     }
   };
+
+  // Monthly atas count for the selected year (driven by the Este ano / Ano anterior filter)
+  const selectedYear = yearFilter === 'Ano anterior' ? new Date().getFullYear() - 1 : new Date().getFullYear();
+
+  const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+    month: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][i],
+    publicadas: atas.filter(a => {
+      const d = new Date(a.data + 'T00:00:00');
+      return d.getMonth() === i && d.getFullYear() === selectedYear && a.status === 'Publicada';
+    }).length,
+    rascunhos: atas.filter(a => {
+      const d = new Date(a.data + 'T00:00:00');
+      return d.getMonth() === i && d.getFullYear() === selectedYear && a.status === 'Rascunho';
+    }).length,
+  }));
 
   return (
     <div id="dashboard-view" className="space-y-8">
@@ -268,9 +267,9 @@ export const DashboardPage: React.FC = () => {
 
           <div className="h-64 mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" fontSize={11} stroke="#94a3b8" axisLine={false} tickLine={false} />
+                <XAxis dataKey="month" fontSize={11} stroke="#94a3b8" axisLine={false} tickLine={false} />
                 <YAxis fontSize={11} stroke="#94a3b8" axisLine={false} tickLine={false} />
                 <Tooltip
                   cursor={{ fill: '#f8fafc' }}
@@ -278,7 +277,7 @@ export const DashboardPage: React.FC = () => {
                     if (active && payload && payload.length) {
                       return (
                         <div className="bg-white border border-slate-100 p-2.5 rounded-lg shadow-md text-xs">
-                          <p className="font-semibold text-slate-900">{payload[0].payload.name === 'Jun' ? 'Junho' : payload[0].payload.name}</p>
+                          <p className="font-semibold text-slate-900">{payload[0].payload.month === 'Jun' ? 'Junho' : payload[0].payload.month}</p>
                           <p className="text-blue-600 font-bold mt-1">{payload[0].value} atas</p>
                         </div>
                       );
@@ -287,15 +286,15 @@ export const DashboardPage: React.FC = () => {
                   }}
                 />
                 <Bar
-                  dataKey="atas"
+                  dataKey="publicadas"
                   fill="#3b82f6"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={40}
                 >
-                  {MONTHLY_DATA.map((entry, index) => (
+                  {monthlyData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={entry.name === 'Jun' ? '#2563eb' : '#93c5fd'}
+                      fill={entry.month === 'Jun' ? '#2563eb' : '#93c5fd'}
                     />
                   ))}
                 </Bar>
