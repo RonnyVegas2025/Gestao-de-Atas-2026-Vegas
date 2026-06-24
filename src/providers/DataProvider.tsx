@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Categoria, Ata, UploadedFile, ItemLixeira, Usuario, AtividadeRecente, Notification } from '../types';
+import { supabase } from '../lib/supabaseClient';
 
 interface DataContextType {
   categorias: Categoria[];
@@ -163,6 +164,62 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
   });
 
+  // Load data from Supabase on mount (overrides local fallback when available)
+  useEffect(() => {
+    supabase.from('categorias').select('*').then(({ data }) => {
+      if (data && data.length > 0) {
+        setCategorias(data.map(c => ({
+          id: c.id,
+          nome: c.nome,
+          cor: c.cor,
+          descricao: c.descricao,
+          criadoEm: c.criado_em,
+        })));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    supabase.from('atas').select('*').then(({ data }) => {
+      if (data) {
+        setAtas(data.map(a => ({
+          id: a.id,
+          numero: a.numero,
+          titulo: a.titulo,
+          categoriaId: a.categoria_id,
+          descricao: a.conteudo ?? '',
+          data: a.data,
+          horario: a.horario,
+          local: a.local,
+          presidente: a.moderador ?? '',
+          secretario: a.secretario ?? '',
+          participantes: a.participantes || [],
+          arquivos: a.arquivos || [],
+          status: a.status,
+          criadoEm: a.criado_em,
+          atualizadoEm: a.atualizado_em ?? a.criado_em,
+          downloadsCount: a.downloads_count ?? 0,
+        })));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    supabase.from('usuarios').select('*').then(({ data }) => {
+      if (data) {
+        setUsuarios(data.map(u => ({
+          id: u.id,
+          nome: u.nome,
+          email: u.email,
+          cargo: u.cargo,
+          departamento: u.departamento,
+          perfil: u.perfil,
+          status: u.status,
+        })));
+      }
+    });
+  }, []);
+
   // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('ata_categorias', JSON.stringify(categorias));
@@ -228,7 +285,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Categorias Handlers
-  const addCategoria = (cat: Omit<Categoria, 'id' | 'criadoEm'>) => {
+  const addCategoria = async (cat: Omit<Categoria, 'id' | 'criadoEm'>) => {
     const newCat: Categoria = {
       ...cat,
       id: `cat-${Date.now()}`,
@@ -237,6 +294,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCategorias(prev => [...prev, newCat]);
     logActivity(currentUser.nome, "cadastrou categoria", newCat.nome);
     addNotification("Categoria criada", `Categoria ${newCat.nome} criada com sucesso`, "success");
+
+    await supabase.from('categorias').insert({
+      id: newCat.id,
+      nome: newCat.nome,
+      cor: newCat.cor,
+      descricao: newCat.descricao,
+    });
   };
 
   const updateCategoria = (id: string, updatedFields: Partial<Categoria>) => {
@@ -245,16 +309,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addNotification("Categoria atualizada", `Categoria ${updatedFields.nome || "Categoria"} foi modificada`, "info");
   };
 
-  const deleteCategoria = (id: string) => {
+  const deleteCategoria = async (id: string) => {
     const cat = categorias.find(c => c.id === id);
     if (!cat) return;
     setCategorias(prev => prev.filter(c => c.id !== id));
     logActivity(currentUser.nome, "excluiu categoria", cat.nome);
     addNotification("Categoria excluída", `Categoria ${cat.nome} excluída com sucesso`, "warning");
+
+    await supabase.from('categorias').delete().eq('id', id);
   };
 
   // Atas Handlers
-  const addAta = (ataFields: Omit<Ata, 'id' | 'criadoEm' | 'atualizadoEm' | 'downloadsCount'>) => {
+  const addAta = async (ataFields: Omit<Ata, 'id' | 'criadoEm' | 'atualizadoEm' | 'downloadsCount'>) => {
     const now = new Date().toISOString();
     const newAta: Ata = {
       ...ataFields,
@@ -266,7 +332,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAtas(prev => [newAta, ...prev]);
     logActivity(currentUser.nome, "criou ata", newAta.numero);
     addNotification("Nova ata criada", `Ata ${newAta.numero} criada com sucesso`, "success");
-    
+
+    await supabase.from('atas').insert({
+      id: newAta.id,
+      numero: newAta.numero,
+      titulo: newAta.titulo,
+      categoria_id: newAta.categoriaId,
+      data: newAta.data,
+      horario: newAta.horario,
+      local: newAta.local,
+      moderador: newAta.presidente,
+      secretario: newAta.secretario,
+      participantes: newAta.participantes,
+      conteudo: newAta.descricao,
+      status: newAta.status,
+      criado_por: currentUser.nome,
+    });
+
     // Add default uploaded PDF representation if file exists
     if (ataFields.arquivos && ataFields.arquivos.length > 0) {
       ataFields.arquivos.forEach(f => {
@@ -284,22 +366,36 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateAta = (id: string, updatedFields: Partial<Ata>) => {
+  const updateAta = async (id: string, updatedFields: Partial<Ata>) => {
     const now = new Date().toISOString();
     setAtas(prev => prev.map(a => a.id === id ? { ...a, ...updatedFields, atualizadoEm: now } : a));
-    
+
     const ata = atas.find(a => a.id === id);
     if (ata) {
       logActivity(currentUser.nome, "editou ata", ata.numero);
       addNotification("Ata atualizada", `Ata ${ata.numero} foi modificada`, "info");
     }
+
+    await supabase.from('atas').update({
+      titulo: updatedFields.titulo,
+      categoria_id: updatedFields.categoriaId,
+      data: updatedFields.data,
+      horario: updatedFields.horario,
+      local: updatedFields.local,
+      moderador: updatedFields.presidente,
+      secretario: updatedFields.secretario,
+      participantes: updatedFields.participantes,
+      conteudo: updatedFields.descricao,
+      status: updatedFields.status,
+      atualizado_em: now,
+    }).eq('id', id);
   };
 
-  const deleteAta = (id: string, user: string) => {
+  const deleteAta = async (id: string, user: string) => {
     const index = atas.findIndex(a => a.id === id);
     if (index === -1) return;
     const ata = atas[index];
-    
+
     // Create soft deleted item
     const trashItem: ItemLixeira = {
       id: `trash-${Date.now()}`,
@@ -314,6 +410,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAtas(prev => prev.filter(a => a.id !== id));
     logActivity(user, "excluiu documento", ata.numero);
     addNotification("Ata removida", `Ata ${ata.numero} foi movida para a lixeira`, "warning");
+
+    await supabase.from('atas').delete().eq('id', id);
   };
 
   // Uploads Handlers
@@ -376,7 +474,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Usuarios Handlers
-  const addUsuario = (userFields: Omit<Usuario, 'id'>) => {
+  const addUsuario = async (userFields: Omit<Usuario, 'id'>) => {
     const newUser: Usuario = {
       ...userFields,
       id: `usr-${Date.now()}`,
@@ -384,20 +482,32 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUsuarios(prev => [...prev, newUser]);
     logActivity(currentUser.nome, "cadastrou usuário", newUser.nome);
     addNotification("Usuário cadastrado", `Novo usuário ${newUser.nome} criado`, "success");
+
+    await supabase.from('usuarios').insert({
+      id: newUser.id,
+      nome: newUser.nome,
+      email: newUser.email,
+      cargo: newUser.cargo,
+      departamento: newUser.departamento,
+      perfil: newUser.perfil,
+      status: newUser.status,
+    });
   };
 
-  const updateUsuario = (id: string, updatedFields: Partial<Usuario>) => {
+  const updateUsuario = async (id: string, updatedFields: Partial<Usuario>) => {
     const user = usuarios.find(u => u.id === id);
     setUsuarios(prev => prev.map(u => u.id === id ? { ...u, ...updatedFields } : u));
     if (user) {
       logActivity(currentUser.nome, "editou dados do usuário", updatedFields.nome || user.nome);
       addNotification("Usuário atualizado", `Usuário ${updatedFields.nome || user.nome} foi modificado`, "info");
-      
+
       // If profile changed, trigger Alterar permissões notification!
       if (updatedFields.perfil && updatedFields.perfil !== user.perfil) {
         notifyPermissionChange(user.nome, updatedFields.perfil);
       }
     }
+
+    await supabase.from('usuarios').update(updatedFields).eq('id', id);
   };
 
   const toggleUsuarioStatus = (id: string) => {
