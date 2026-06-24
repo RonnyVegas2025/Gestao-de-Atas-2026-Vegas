@@ -49,6 +49,7 @@ interface DataContextType {
   addUsuario: (user: Omit<Usuario, 'id'>) => void;
   updateUsuario: (id: string, user: Partial<Usuario>) => void;
   toggleUsuarioStatus: (id: string) => void;
+  reloadUsuarios: () => Promise<void>;
 
   // Notification Actions
   notifications: Notification[];
@@ -520,6 +521,22 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) addNotification('Erro ao salvar', 'Não foi possível salvar no banco. Tente novamente.', 'error');
   };
 
+  // Reloads the usuarios list from Supabase (used after creating a user via Edge Function)
+  const reloadUsuarios = async () => {
+    const { data } = await supabase.from('usuarios').select('*');
+    if (data) {
+      setUsuarios(data.map(u => ({
+        id: u.id,
+        nome: u.nome,
+        email: u.email,
+        cargo: u.cargo,
+        departamento: u.departamento,
+        perfil: u.perfil,
+        status: u.status,
+      })));
+    }
+  };
+
   const toggleUsuarioStatus = (id: string) => {
     const user = usuarios.find(u => u.id === id);
     setUsuarios(prev => prev.map(u => u.id === id ? { ...u, status: u.status === 'Ativo' ? 'Inativo' : 'Ativo' } : u));
@@ -702,6 +719,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       addUsuario,
       updateUsuario,
       toggleUsuarioStatus,
+      reloadUsuarios,
       notifications,
       addNotification,
       removeNotification,

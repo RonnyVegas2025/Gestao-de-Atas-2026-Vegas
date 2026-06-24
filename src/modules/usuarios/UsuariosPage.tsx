@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../../providers/DataProvider';
+import { supabase } from '../../lib/supabaseClient';
 import {
   Users,
   Plus,
@@ -8,20 +9,22 @@ import {
   UserX,
   Edit,
   Mail,
+  Lock,
   Network
 } from 'lucide-react';
 
 export const UsuariosPage: React.FC = () => {
   const {
     usuarios,
-    addUsuario,
     updateUsuario,
     toggleUsuarioStatus,
+    reloadUsuarios,
   } = useData();
 
   // Create Mode States
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [cargo, setCargo] = useState('');
   const [departamento, setDepartamento] = useState('');
   const [perfil, setPerfil] = useState<'Administrador' | 'Editor' | 'Leitor'>('Leitor');
@@ -29,7 +32,7 @@ export const UsuariosPage: React.FC = () => {
   // Edit Mode States
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome.trim() || !email.trim()) return;
 
@@ -43,19 +46,32 @@ export const UsuariosPage: React.FC = () => {
       });
       setEditingId(null);
     } else {
-      addUsuario({
-        nome,
-        email,
-        cargo,
-        departamento,
-        perfil,
-        status: 'Ativo',
+      if (!senha.trim()) {
+        alert('Informe uma senha para o novo usuário.');
+        return;
+      }
+
+      const response = await fetch('https://rmfyswnoxpyfvebbkrwn.supabase.co/functions/v1/create-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: JSON.stringify({ nome, email, password: senha, cargo, departamento, perfil, status: 'Ativo' })
       });
+      const result = await response.json();
+      if (result.error) {
+        alert('Erro: ' + result.error);
+        return;
+      }
+      // Recarrega lista de usuários do Supabase
+      await reloadUsuarios();
     }
 
     // Reset fields
     setNome('');
     setEmail('');
+    setSenha('');
     setCargo('');
     setDepartamento('');
     setPerfil('Leitor');
@@ -74,6 +90,7 @@ export const UsuariosPage: React.FC = () => {
     setEditingId(null);
     setNome('');
     setEmail('');
+    setSenha('');
     setCargo('');
     setDepartamento('');
     setPerfil('Leitor');
@@ -145,6 +162,28 @@ export const UsuariosPage: React.FC = () => {
                 />
               </div>
             </div>
+
+            {/* Senha (apenas na criação - cria login no Supabase Auth) */}
+            {!editingId && (
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                  Senha de Acesso *
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <Lock className="w-3.5 h-3.5" />
+                  </span>
+                  <input
+                    id="user-form-senha"
+                    type="password"
+                    placeholder="Mínimo de 6 caracteres"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-2">
               {/* Cargo */}
