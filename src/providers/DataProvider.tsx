@@ -21,6 +21,8 @@ interface DataContextType {
   isAuthenticated: boolean;
   login: (email: string, pass: string) => boolean;
   logout: () => void;
+  setAuthenticated: (value: boolean) => void;
+  setCurrentUserFromSupabase: (user: { nome: string; email: string; cargo: string; departamento: string; perfil: string }) => void;
   updateCurrentUserProfile: (nome: string, foto: string) => void;
   changePassword: (oldPass: string, newPass: string) => { success: boolean; error?: string };
   
@@ -649,6 +651,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setNotifications(INITIAL_NOTIFICATIONS);
   };
 
+  const setAuthenticated = (value: boolean) => {
+    setIsAuthenticated(value);
+  };
+
+  const setCurrentUserFromSupabase = (user: { nome: string; email: string; cargo: string; departamento: string; perfil: string }) => {
+    setCurrentUser(prev => ({ ...prev, ...user }));
+  };
+
   const updateCurrentUserProfile = (nome: string, foto: string) => {
     setCurrentUser(prev => ({
       ...prev,
@@ -703,6 +713,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated,
       login,
       logout,
+      setAuthenticated,
+      setCurrentUserFromSupabase,
       updateCurrentUserProfile,
       changePassword,
       addCategoria,
