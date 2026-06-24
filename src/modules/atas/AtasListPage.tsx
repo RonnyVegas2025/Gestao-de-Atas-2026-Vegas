@@ -22,7 +22,6 @@ export const AtasListPage: React.FC = () => {
     atas,
     categorias,
     deleteAta,
-    simulateDownload,
   } = useData();
 
   const navigate = useNavigate();
@@ -394,7 +393,13 @@ export const AtasListPage: React.FC = () => {
                         </button>
 
                         <button
-                          onClick={() => simulateDownload(ata.id, ata.titulo)}
+                          onClick={() => {
+                            if (ata.arquivoUrl) {
+                              window.open(ata.arquivoUrl, '_blank');
+                            } else {
+                              window.print();
+                            }
+                          }}
                           className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50/30 rounded-lg transition-all"
                           title="Baixar ata oficial"
                         >

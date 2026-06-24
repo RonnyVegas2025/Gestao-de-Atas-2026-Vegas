@@ -18,7 +18,7 @@ import {
 
 export const ViewAtaPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { atas, categorias, simulateDownload } = useData();
+  const { atas, categorias } = useData();
   const navigate = useNavigate();
 
   const ata = atas.find(a => a.id === id);
@@ -121,7 +121,16 @@ export const ViewAtaPage: React.FC = () => {
             <span>Editar Informações</span>
           </button>
 
-          {/* Download as real PDF via print dialog */}
+          {/* Export the ata as PDF via print dialog */}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-xs font-bold transition-all cursor-pointer"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Exportar PDF</span>
+          </button>
+
+          {/* Download the attached file (or print when none) */}
           <button
             onClick={handleDownloadPDF}
             className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-all shadow-sm cursor-pointer"
@@ -143,7 +152,14 @@ export const ViewAtaPage: React.FC = () => {
             {/* Embedded window header */}
             <div className="w-full max-w-[650px] bg-[#1a1c24] text-white px-4 py-2 rounded-t-xl flex items-center justify-between text-xs">
               <span className="font-semibold text-gray-300 font-mono">Visualizador Integrado: {ata.numero}.pdf</span>
-              <span className="font-semibold text-[10px] py-0.5 px-2 bg-emerald-600 text-white rounded">PDF Protegido</span>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-1 font-semibold text-[10px] py-0.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-colors cursor-pointer"
+                title="Exportar ata como PDF"
+              >
+                <FileDown className="w-3 h-3" />
+                <span>Exportar PDF</span>
+              </button>
             </div>
 
             {/* WHITE SHEET ACTING AS WATERMARKED PDF DOC */}
@@ -327,8 +343,7 @@ export const ViewAtaPage: React.FC = () => {
                 {ata.arquivos.map((file, idx) => (
                   <div
                     key={idx}
-                    onClick={() => simulateDownload(ata.id, file.name)}
-                    className="flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:bg-blue-50/50 hover:border-blue-100 transition-all cursor-pointer group text-xs text-left"
+                    className="flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:bg-blue-50/50 hover:border-blue-100 transition-all group text-xs text-left"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0">
@@ -343,6 +358,16 @@ export const ViewAtaPage: React.FC = () => {
                         </span>
                       </div>
                     </div>
+
+                    {/* Download attachment in a new tab */}
+                    <button
+                      onClick={() => ata.arquivoUrl && window.open(ata.arquivoUrl, '_blank')}
+                      disabled={!ata.arquivoUrl}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                      title="Baixar anexo"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
                   </div>
                 ))}
               </div>
