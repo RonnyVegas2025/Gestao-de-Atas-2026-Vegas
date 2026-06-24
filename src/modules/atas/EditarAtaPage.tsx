@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../../providers/DataProvider';
+import { supabase } from '../../lib/supabaseClient';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   FileText,
@@ -36,6 +37,7 @@ export const EditarAtaPage: React.FC = () => {
   const [participantes, setParticipantes] = useState<string[]>([]);
   const [novoParticipante, setNovoParticipante] = useState('');
   const [arquivos, setArquivos] = useState<{ name: string; size: string; type: string; url: string }[]>([]);
+  const [arquivoUrl, setArquivoUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
 
   // Hydrate fields
@@ -53,6 +55,7 @@ export const EditarAtaPage: React.FC = () => {
       setStatus(originalAta.status);
       setParticipantes(originalAta.participantes);
       setArquivos(originalAta.arquivos || []);
+      setArquivoUrl(originalAta.arquivoUrl || '');
     }
   }, [originalAta]);
 
@@ -80,26 +83,42 @@ export const EditarAtaPage: React.FC = () => {
     setParticipantes(prev => prev.filter(p => p !== name));
   };
 
-  // Upload simulation helper
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Real upload to Supabase Storage
+  const handleFileUpload = async (file: File): Promise<string | null> => {
+    const filePath = `atas/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from('documentos').upload(filePath, file);
+    if (error) { alert('Erro ao enviar arquivo.'); return null; }
+    const { data } = supabase.storage.from('documentos').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
-      if (['pdf', 'docx', 'xlsx'].includes(ext)) {
+      if (!['pdf', 'docx', 'xlsx'].includes(ext)) {
+        alert('Formatos permitidos: PDF, DOCX ou XLSX');
+        return;
+      }
+      const url = await handleFileUpload(file);
+      if (url) {
         setArquivos(prev => [...prev, {
           name: file.name,
           size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
           type: ext,
-          url: '#'
+          url,
         }]);
-      } else {
-        alert('Formatos permitidos: PDF, DOCX ou XLSX');
+        setArquivoUrl(url);
       }
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setArquivos(prev => prev.filter((_, i) => i !== index));
+    setArquivos(prev => {
+      const next = prev.filter((_, i) => i !== index);
+      setArquivoUrl(next.length > 0 ? next[next.length - 1].url : '');
+      return next;
+    });
   };
 
   // Submit Handler
@@ -121,6 +140,7 @@ export const EditarAtaPage: React.FC = () => {
       participantes,
       arquivos,
       status,
+      arquivoUrl,
     });
 
     navigate('/atas');

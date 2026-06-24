@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../../providers/DataProvider';
+import { supabase } from '../../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText,
@@ -36,10 +37,20 @@ export const NovaAtaPage: React.FC = () => {
   const [novoParticipante, setNovoParticipante] = useState('');
   const [participantes, setParticipantes] = useState<string[]>(['Administrador']);
 
-  // Upload Simulation State
+  // Upload State
   const [arquivos, setArquivos] = useState<{ name: string; size: string; type: string; url: string }[]>([]);
+  const [arquivoUrl, setArquivoUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Real upload to Supabase Storage
+  const handleFileUpload = async (file: File): Promise<string | null> => {
+    const filePath = `atas/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage.from('documentos').upload(filePath, file);
+    if (error) { alert('Erro ao enviar arquivo.'); return null; }
+    const { data } = supabase.storage.from('documentos').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
 
   // Add Participant
   const handleAddParticipante = (e?: React.FormEvent) => {
@@ -70,29 +81,32 @@ export const NovaAtaPage: React.FC = () => {
     }
   };
 
-  const simulateFileUpload = (fileList: FileList) => {
+  const uploadFiles = async (fileList: FileList) => {
     setIsUploading(true);
-    setTimeout(() => {
-      for (let i = 0; i < fileList.length; i++) {
-        const file = fileList[i];
-        const ext = file.name.split('.').pop()?.toLowerCase() || '';
-        const allowed = ['pdf', 'docx', 'xlsx'];
-        
-        if (allowed.includes(ext)) {
-          const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-          setArquivos(prev => [...prev, {
-            name: file.name,
-            size: `${sizeMB} MB`,
-            type: ext,
-            url: '#'
-          }]);
-        } else {
-          alert('Apenas arquivos PDF, DOCX ou XLSX são aceitos!');
-        }
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const ext = file.name.split('.').pop()?.toLowerCase() || '';
+      const allowed = ['pdf', 'docx', 'xlsx'];
+
+      if (!allowed.includes(ext)) {
+        alert('Apenas arquivos PDF, DOCX ou XLSX são aceitos!');
+        continue;
       }
-      setIsUploading(false);
-      setDragActive(false);
-    }, 800);
+
+      const url = await handleFileUpload(file);
+      if (url) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        setArquivos(prev => [...prev, {
+          name: file.name,
+          size: `${sizeMB} MB`,
+          type: ext,
+          url,
+        }]);
+        setArquivoUrl(url);
+      }
+    }
+    setIsUploading(false);
+    setDragActive(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -100,18 +114,22 @@ export const NovaAtaPage: React.FC = () => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      simulateFileUpload(e.dataTransfer.files);
+      uploadFiles(e.dataTransfer.files);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      simulateFileUpload(e.target.files);
+      uploadFiles(e.target.files);
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setArquivos(prev => prev.filter((_, i) => i !== index));
+    setArquivos(prev => {
+      const next = prev.filter((_, i) => i !== index);
+      setArquivoUrl(next.length > 0 ? next[next.length - 1].url : '');
+      return next;
+    });
   };
 
   // Submit form handler
@@ -139,6 +157,7 @@ export const NovaAtaPage: React.FC = () => {
       participantes,
       arquivos,
       status,
+      arquivoUrl,
     });
 
     navigate('/atas');

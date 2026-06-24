@@ -23,9 +23,13 @@ export const ViewAtaPage: React.FC = () => {
 
   const ata = atas.find(a => a.id === id);
 
-  // Generate a real PDF using the browser's print dialog (Save as PDF)
+  // Open the uploaded file when available, otherwise generate a PDF via print dialog
   const handleDownloadPDF = () => {
-    window.print();
+    if (ata?.arquivoUrl) {
+      window.open(ata.arquivoUrl, '_blank');
+    } else {
+      window.print();
+    }
   };
 
   if (!ata) {
