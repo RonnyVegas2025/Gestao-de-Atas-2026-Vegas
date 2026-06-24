@@ -232,14 +232,6 @@ export const ViewAtaPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Barcode representation */}
-                <div className="pt-8 border-t border-gray-100 flex flex-col items-center space-y-1 text-[8px] text-gray-400 font-mono select-none">
-                  <div className="tracking-widest bg-gray-200 text-gray-500 h-6 w-48 text-center flex items-center justify-center font-bold">
-                    ||| | || ||| || ||| || ||| || || | | ||
-                  </div>
-                  <span>Chave de Verificação SHA-256: 7f4a2d3e...e9c8a7f1</span>
-                </div>
-
               </div>
 
             </div>
