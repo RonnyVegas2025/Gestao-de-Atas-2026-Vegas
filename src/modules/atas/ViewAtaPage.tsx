@@ -23,6 +23,11 @@ export const ViewAtaPage: React.FC = () => {
 
   const ata = atas.find(a => a.id === id);
 
+  // Generate a real PDF using the browser's print dialog (Save as PDF)
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   if (!ata) {
     return (
       <div className="bg-white p-8 rounded-2xl border border-gray-100 text-center space-y-4">
@@ -62,7 +67,26 @@ export const ViewAtaPage: React.FC = () => {
 
   return (
     <div id="view-ata-portal" className="space-y-6">
-      
+
+      {/* Print styling: only the document sheet is sent to the printer / PDF */}
+      <style>{`
+        @media print {
+          body * { visibility: hidden !important; }
+          #pdf-embed-simulator, #pdf-embed-simulator * { visibility: visible !important; }
+          #pdf-embed-simulator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+            background: #ffffff;
+          }
+        }
+      `}</style>
+
       {/* UPPER CONTROLS PANEL */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div className="flex items-center gap-3 text-left">
@@ -93,9 +117,9 @@ export const ViewAtaPage: React.FC = () => {
             <span>Editar Informações</span>
           </button>
 
-          {/* Download Text Representation */}
+          {/* Download as real PDF via print dialog */}
           <button
-            onClick={() => simulateDownload(ata.id, ata.titulo)}
+            onClick={handleDownloadPDF}
             className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-all shadow-sm cursor-pointer"
           >
             <Download className="w-4 h-4" />
@@ -127,9 +151,9 @@ export const ViewAtaPage: React.FC = () => {
                   <Building className="w-9 h-9 text-gray-600" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-extrabold tracking-widest text-gray-900 uppercase">REPÚBLICA FEDERATIVA DO BRASIL</h4>
-                  <h5 className="text-[10px] font-bold tracking-wider text-gray-600 uppercase mt-0.5">SISTEMA INTEGRADO DE ATAS E DOCUMENTOS OFICIAIS</h5>
-                  <h6 className="text-[9px] font-semibold text-indigo-700 tracking-wide mt-1 uppercase">CORP - CONSELHO ADMINISTRATIVO E FINANCEIRO</h6>
+                  <h4 className="text-xs font-extrabold tracking-widest text-gray-900 uppercase">SBS Participações</h4>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest">Portal de Transparência — Gestão de Atas e Documentos</p>
+                  <p className="text-[10px] text-blue-600 uppercase tracking-widest font-semibold">Conselho Administrativo e Financeiro</p>
                 </div>
               </div>
 
