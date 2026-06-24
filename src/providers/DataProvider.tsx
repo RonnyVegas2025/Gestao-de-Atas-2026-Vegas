@@ -78,173 +78,28 @@ const INITIAL_CATEGORIAS: Categoria[] = [
 ];
 
 // Initial Atas
-const INITIAL_ATAS: Ata[] = [
-  {
-    id: "ata-1537",
-    numero: "ATA - 1537/1423.726",
-    titulo: "Ata financeira referente à reunião ordinária",
-    categoriaId: "cat-financeiro",
-    descricao: "Revisão do balanço financeiro anual, aprovação de orçamento para investimentos de tecnologia e remanejamento do plano de contas para despesas recorrentes.",
-    data: "2025-05-15",
-    horario: "14:00",
-    local: "Auditório Principal & Microsoft Teams",
-    presidente: "Administrador",
-    secretario: "Maria Souza",
-    participantes: ["Administrador", "Maria Souza", "João Lima", "Ana Paula", "Carlos Ramos"],
-    arquivos: [
-      { name: "ATA - 1537/1423.726.pdf", size: "2.4 MB", type: "pdf", url: "#" }
-    ],
-    status: "Publicada",
-    criadoEm: "2025-05-15T14:00:00Z",
-    atualizadoEm: "2025-05-15T16:30:00Z",
-    downloadsCount: 437
-  },
-  {
-    id: "ata-1536",
-    numero: "ATA - 1536/1423.725",
-    titulo: "Ata administrativa referente à reunião extraordinária",
-    categoriaId: "cat-administrativo",
-    descricao: "Definição do plano de migração de servidores on-premise para nuvem hibrida e aprovação dos novos perfis de acesso remoto por VPN.",
-    data: "2025-05-10",
-    horario: "10:30",
-    local: "Sala de Reuniões B",
-    presidente: "Maria Souza",
-    secretario: "João Lima",
-    participantes: ["Maria Souza", "João Lima", "Carlos Santos", "Daniel Alencar"],
-    arquivos: [
-      { name: "ATA - 1536/1423.725.pdf", size: "1.8 MB", type: "pdf", url: "#" }
-    ],
-    status: "Publicada",
-    criadoEm: "2025-05-10T10:30:00Z",
-    atualizadoEm: "2025-05-10T12:00:00Z",
-    downloadsCount: 312
-  },
-  {
-    id: "ata-1535",
-    numero: "ATA - 1535/1423.724",
-    titulo: "Ata de processo de licitação",
-    categoriaId: "cat-licitacoes",
-    descricao: "Julgamento de recursos referentes à aquisição de novos computadores para o setor operacional. Parecer jurídico favorável à homologação presencial.",
-    data: "2025-05-08",
-    horario: "09:00",
-    local: "Sala da Diretoria",
-    presidente: "João Lima",
-    secretario: "Gabriela Costa",
-    participantes: ["João Lima", "Gabriela Costa", "Fernando Silva"],
-    arquivos: [
-      { name: "ATA - 1535/1423.724.pdf", size: "2.1 MB", type: "pdf", url: "#" }
-    ],
-    status: "Publicada",
-    criadoEm: "2025-05-08T09:00:00Z",
-    atualizadoEm: "2025-05-08T11:45:00Z",
-    downloadsCount: 249
-  },
-  {
-    id: "ata-1534",
-    numero: "ATA - 1534/1423.723",
-    titulo: "Ata de reunião ordinária",
-    categoriaId: "cat-reunioes",
-    descricao: "Reunião mensal de alinhamento estratégico com coordenadores. Apresentação do cronograma de desenvolvimento de novos sistemas internos de controle.",
-    data: "2025-05-05",
-    horario: "16:00",
-    local: "Videoconferência Teams",
-    presidente: "Roberto Campos",
-    secretario: "Aline Reis",
-    participantes: ["Roberto Campos", "Aline Reis", "Pedro Silva", "Juliana Lima"],
-    arquivos: [],
-    status: "Publicada",
-    criadoEm: "2025-05-05T16:00:00Z",
-    atualizadoEm: "2025-05-05T17:30:00Z",
-    downloadsCount: 125
-  },
-  {
-    id: "ata-1533",
-    numero: "ATA - 1533/1423.722",
-    titulo: "Ata de contrato de prestação de serviço",
-    categoriaId: "cat-contratos",
-    descricao: "Revisão e homologação das cláusulas de penalidade de nível de serviço (SLA) para a prestadora terceirizada de facilities e vigilância patrimonial.",
-    data: "2025-05-02",
-    horario: "11:00",
-    local: "Sala Presencial de Treinamento",
-    presidente: "Juliana Barros",
-    secretario: "Ricardo Souza",
-    participantes: ["Juliana Barros", "Ricardo Souza"],
-    arquivos: [
-      { name: "ATA - 1533_1423.722.pdf", size: "1.2 MB", type: "pdf", url: "#" }
-    ],
-    status: "Rascunho",
-    criadoEm: "2025-05-02T11:00:00Z",
-    atualizadoEm: "2025-05-02T12:15:00Z",
-    downloadsCount: 0
-  }
-];
+const INITIAL_ATAS: Ata[] = [];
 
 // Initial Uploads
-const INITIAL_UPLOADS: UploadedFile[] = [
-  { id: "up-1", nome: "ATA - 1537/1423.726.pdf", tipo: "pdf", tamanho: "2.4 MB", usuario: "Administrador", data: "2025-05-15", status: "Concluído" },
-  { id: "up-2", nome: "ATA - 1536/1423.725.pdf", tipo: "pdf", tamanho: "1.8 MB", usuario: "Maria Souza", data: "2025-05-10", status: "Concluído" },
-  { id: "up-3", nome: "ATA - 1535/1423.724.pdf", tipo: "pdf", tamanho: "2.1 MB", usuario: "João Lima", data: "2025-05-08", status: "Concluído" },
-  { id: "up-4", nome: "CONTRATO_SEG_VIG_2025_V1.docx", tipo: "docx", tamanho: "4.5 MB", usuario: "Administrador", data: "2025-05-05", status: "Concluído" },
-  { id: "up-5", nome: "PLANILHA_FIN_Q2_RECALC.xlsx", tipo: "xlsx", tamanho: "8.2 MB", usuario: "Aline Reis", data: "2025-05-03", status: "Concluído" },
-];
+const INITIAL_UPLOADS: UploadedFile[] = [];
 
 // Initial Users
 const INITIAL_USUARIOS: Usuario[] = [
-  { id: "usr-1", nome: "Administrador", email: "admin@financeata.com", cargo: "Gerente Geral", departamento: "Presidência", perfil: "Administrador", status: "Ativo" },
-  { id: "usr-2", nome: "Maria Souza", email: "maria.souza@corporativo.com", cargo: "Coordenadora Fiscal", departamento: "Financeiro", perfil: "Editor", status: "Ativo" },
-  { id: "usr-3", nome: "João Lima", email: "joao.lima@licitacoes.gov", cargo: "Pregoeiro Líder", departamento: "Contratos/Licitações", perfil: "Editor", status: "Ativo" },
-  { id: "usr-4", nome: "Gabriela Costa", email: "gabriela.costa@auxiliar.com", cargo: "Assistente Administrativa", departamento: "TI/Suporte", perfil: "Leitor", status: "Ativo" },
-  { id: "usr-5", nome: "Fernando Silva", email: "fernando.silva@parceiro.com", cargo: "Auditor Externo", departamento: "Auditoria", perfil: "Leitor", status: "Inativo" },
+  { id: "usr-1", nome: "Ronny Peterson", email: "ronny.peterson@vegascard.com.br", cargo: "Administrador", departamento: "Diretoria", perfil: "Administrador", status: "Ativo" },
 ];
 
 // Initial Activity logs
-const INITIAL_ATIVIDADES: AtividadeRecente[] = [
-  { id: "act-1", usuario: "Administrador", acao: "publicou uma nova ata", documento: "ATA - 1537/1423.726", data: "Há 2 horas", perfilIniciais: "A", corPerfil: "bg-blue-600" },
-  { id: "act-2", usuario: "Maria Souza", acao: "editou uma ata", documento: "ATA - 1536/1423.725", data: "Há 5 horas", perfilIniciais: "M", corPerfil: "bg-emerald-500" },
-  { id: "act-3", usuario: "João Lima", acao: "fez upload de um arquivo", documento: "ATA - 1535/1423.724", data: "Há 1 dia", perfilIniciais: "J", corPerfil: "bg-orange-500" },
-  { id: "act-4", usuario: "Sistema", acao: "realizou backup automático", documento: "Backup completo realizado", data: "Há 1 dia", perfilIniciais: "S", corPerfil: "bg-blue-500" },
-];
+const INITIAL_ATIVIDADES: AtividadeRecente[] = [];
 
-const INITIAL_NOTIFICATIONS: Notification[] = [
-  {
-    id: "not-1",
-    title: "Nova ata criada",
-    message: "Ata ATA-1537 criada com sucesso",
-    type: "success",
-    read: false,
-    createdAt: new Date(Date.now() - 30 * 60000).toISOString(),
-    createdBy: "Administrador"
-  },
-  {
-    id: "not-2",
-    title: "Ata atualizada",
-    message: "Ata ATA-1536 foi modificada",
-    type: "info",
-    read: false,
-    createdAt: new Date(Date.now() - 120 * 60000).toISOString(),
-    createdBy: "Maria Souza"
-  },
-  {
-    id: "not-3",
-    title: "Upload realizado",
-    message: "Novo documento enviado",
-    type: "success",
-    read: false,
-    createdAt: new Date(Date.now() - 300 * 60000).toISOString(),
-    createdBy: "João Lima"
-  },
-  {
-    id: "not-4",
-    title: "Usuário cadastrado",
-    message: "Novo usuário criado",
-    type: "info",
-    read: true,
-    createdAt: new Date(Date.now() - 1440 * 60000).toISOString(),
-    createdBy: "Sistema"
-  }
-];
+const INITIAL_NOTIFICATIONS: Notification[] = [];
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Reset dados fictícios — rodar uma vez
+  if (localStorage.getItem('ata_data_version') !== '2') {
+    Object.keys(localStorage).filter(k => k.startsWith('ata_')).forEach(k => localStorage.removeItem(k));
+    localStorage.setItem('ata_data_version', '2');
+  }
+
   const [categorias, setCategorias] = useState<Categoria[]>(() => {
     const saved = localStorage.getItem('ata_categorias');
     return saved ? JSON.parse(saved) : INITIAL_CATEGORIAS;
@@ -277,7 +132,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [totalDownloads, setTotalDownloads] = useState<number>(() => {
     const saved = localStorage.getItem('ata_total_downloads');
-    return saved ? parseInt(saved, 10) : 5342;
+    return saved ? parseInt(saved, 10) : 0;
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
