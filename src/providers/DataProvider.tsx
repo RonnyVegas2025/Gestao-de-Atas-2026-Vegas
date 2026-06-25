@@ -174,25 +174,36 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.from('atas').select('*').then(({ data, error }) => {
       console.log('Atas do Supabase:', data, 'Erro:', error);
       if (data) {
-        setAtas(data.map(a => ({
-          id: a.id,
-          numero: a.numero,
-          titulo: a.titulo,
-          categoriaId: a.categoria_id,
-          descricao: a.conteudo ?? '',
-          data: a.data,
-          horario: a.horario,
-          local: a.local,
-          presidente: a.moderador ?? '',
-          secretario: a.secretario ?? '',
-          participantes: a.participantes || [],
-          arquivos: a.arquivos || [],
-          status: a.status,
-          arquivosUrls: a.arquivo_url ? JSON.parse(a.arquivo_url) : [],
-          criadoEm: a.criado_em,
-          atualizadoEm: a.atualizado_em ?? a.criado_em,
-          downloadsCount: a.downloads_count ?? 0,
-        })));
+        setAtas(data.map(a => {
+          let arquivosUrls = [];
+          if (a.arquivo_url) {
+            try {
+              arquivosUrls = JSON.parse(a.arquivo_url);
+            } catch {
+              // URL simples antiga — converte para array
+              arquivosUrls = [{ nome: 'Arquivo', url: a.arquivo_url, tipo: 'application/octet-stream' }];
+            }
+          }
+          return {
+            id: a.id,
+            numero: a.numero,
+            titulo: a.titulo,
+            categoriaId: a.categoria_id,
+            descricao: a.conteudo ?? '',
+            data: a.data,
+            horario: a.horario,
+            local: a.local,
+            presidente: a.moderador ?? '',
+            secretario: a.secretario ?? '',
+            participantes: a.participantes || [],
+            arquivos: a.arquivos || [],
+            status: a.status,
+            arquivosUrls,
+            criadoEm: a.criado_em,
+            atualizadoEm: a.atualizado_em ?? a.criado_em,
+            downloadsCount: a.downloads_count ?? 0,
+          };
+        }));
       }
     });
   }, []);
