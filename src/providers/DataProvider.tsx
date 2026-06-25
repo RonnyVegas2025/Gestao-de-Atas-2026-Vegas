@@ -78,9 +78,6 @@ const INITIAL_CATEGORIAS: Categoria[] = [
   { id: 'cat-estatuto', nome: 'Estatuto', cor: 'emerald', descricao: 'Estatuto e normas institucionais.', criadoEm: '2026-01-01' },
 ];
 
-// Initial Atas
-const INITIAL_ATAS: Ata[] = [];
-
 // Initial Uploads
 const INITIAL_UPLOADS: UploadedFile[] = [];
 
@@ -95,21 +92,13 @@ const INITIAL_ATIVIDADES: AtividadeRecente[] = [];
 const INITIAL_NOTIFICATIONS: Notification[] = [];
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Reset dados fictícios — rodar uma vez
-  if (localStorage.getItem('ata_data_version') !== '3') {
-    Object.keys(localStorage).filter(k => k.startsWith('ata_')).forEach(k => localStorage.removeItem(k));
-    localStorage.setItem('ata_data_version', '3');
-  }
-
   const [categorias, setCategorias] = useState<Categoria[]>(() => {
     const saved = localStorage.getItem('ata_categorias');
     return saved ? JSON.parse(saved) : INITIAL_CATEGORIAS;
   });
 
-  const [atas, setAtas] = useState<Ata[]>(() => {
-    const saved = localStorage.getItem('ata_atas');
-    return saved ? JSON.parse(saved) : INITIAL_ATAS;
-  });
+  // Atas sempre iniciam vazias — os dados vêm do Supabase
+  const [atas, setAtas] = useState<Ata[]>([]);
 
   const [uploads, setUploads] = useState<UploadedFile[]>(() => {
     const saved = localStorage.getItem('ata_uploads');
