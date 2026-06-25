@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../../providers/DataProvider';
 import { supabase } from '../../lib/supabaseClient';
 import {
@@ -19,7 +20,14 @@ export const UsuariosPage: React.FC = () => {
     updateUsuario,
     toggleUsuarioStatus,
     reloadUsuarios,
+    perfilUsuario,
   } = useData();
+  const navigate = useNavigate();
+
+  // Apenas Administrador acede à gestão de usuários
+  useEffect(() => {
+    if (perfilUsuario !== 'Administrador') navigate('/dashboard');
+  }, [perfilUsuario, navigate]);
 
   // Create Mode States
   const [nome, setNome] = useState('');

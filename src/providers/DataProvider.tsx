@@ -19,6 +19,7 @@ interface DataContextType {
     dataCadastro?: string;
     ultimoAcesso?: string;
   };
+  perfilUsuario: string;
   isAuthenticated: boolean;
   login: (email: string, pass: string) => boolean;
   logout: () => void;
@@ -699,6 +700,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       usuarios,
       atividades,
       currentUser,
+      perfilUsuario: currentUser.perfil,
       isAuthenticated,
       login,
       logout,

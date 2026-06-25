@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../../providers/DataProvider';
 import { supabase } from '../../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +18,13 @@ import {
 import { motion } from 'motion/react';
 
 export const NovaAtaPage: React.FC = () => {
-  const { categorias, addAta } = useData();
+  const { categorias, addAta, perfilUsuario } = useData();
   const navigate = useNavigate();
+
+  // Leitor não pode criar atas
+  useEffect(() => {
+    if (perfilUsuario === 'Leitor') navigate('/atas');
+  }, [perfilUsuario, navigate]);
 
   // Form Fields State
   const [numero, setNumero] = useState('ATA - ');

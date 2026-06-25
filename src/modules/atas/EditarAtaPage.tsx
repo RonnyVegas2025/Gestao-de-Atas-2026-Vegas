@@ -18,8 +18,13 @@ import {
 
 export const EditarAtaPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { atas, categorias, updateAta } = useData();
+  const { atas, categorias, updateAta, perfilUsuario } = useData();
   const navigate = useNavigate();
+
+  // Leitor não pode editar atas
+  useEffect(() => {
+    if (perfilUsuario === 'Leitor') navigate('/atas');
+  }, [perfilUsuario, navigate]);
 
   const originalAta = atas.find(a => a.id === id);
 

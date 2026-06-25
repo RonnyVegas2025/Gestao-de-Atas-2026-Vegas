@@ -42,7 +42,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon, label, active }) =>
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const { currentUser } = useData();
+  const { currentUser, perfilUsuario } = useData();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
@@ -143,49 +143,53 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                   active={currentPath === '/categorias'}
                 />
               </li>
-              <li>
-                <SidebarItem
-                  to="/lixeira"
-                  icon={<Trash2 className="w-4 h-4" />}
-                  label="Lixeira"
-                  active={currentPath === '/lixeira'}
-                />
-              </li>
+              {perfilUsuario !== 'Leitor' && (
+                <li>
+                  <SidebarItem
+                    to="/lixeira"
+                    icon={<Trash2 className="w-4 h-4" />}
+                    label="Lixeira"
+                    active={currentPath === '/lixeira'}
+                  />
+                </li>
+              )}
             </ul>
           </div>
 
-          {/* SECTION: CREDENCIAMENTO */}
-          <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">
-              Credenciamento
-            </p>
-            <ul className="space-y-1">
-              <li>
-                <SidebarItem
-                  to="/usuarios"
-                  icon={<Users className="w-4 h-4" />}
-                  label="Usuários"
-                  active={currentPath === '/usuarios'}
-                />
-              </li>
-              <li>
-                <SidebarItem
-                  to="/permissoes"
-                  icon={<ShieldAlert className="w-4 h-4" />}
-                  label="Permissões"
-                  active={currentPath === '/permissoes'}
-                />
-              </li>
-              <li>
-                <SidebarItem
-                  to="/relatorios"
-                  icon={<BarChart3 className="w-4 h-4" />}
-                  label="Relatórios"
-                  active={currentPath === '/relatorios'}
-                />
-              </li>
-            </ul>
-          </div>
+          {/* SECTION: CREDENCIAMENTO (apenas Administrador) */}
+          {perfilUsuario === 'Administrador' && (
+            <div>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">
+                Credenciamento
+              </p>
+              <ul className="space-y-1">
+                <li>
+                  <SidebarItem
+                    to="/usuarios"
+                    icon={<Users className="w-4 h-4" />}
+                    label="Usuários"
+                    active={currentPath === '/usuarios'}
+                  />
+                </li>
+                <li>
+                  <SidebarItem
+                    to="/permissoes"
+                    icon={<ShieldAlert className="w-4 h-4" />}
+                    label="Permissões"
+                    active={currentPath === '/permissoes'}
+                  />
+                </li>
+                <li>
+                  <SidebarItem
+                    to="/relatorios"
+                    icon={<BarChart3 className="w-4 h-4" />}
+                    label="Relatórios"
+                    active={currentPath === '/relatorios'}
+                  />
+                </li>
+              </ul>
+            </div>
+          )}
         </nav>
 
         {/* Dynamic User Profile Status Footer */}

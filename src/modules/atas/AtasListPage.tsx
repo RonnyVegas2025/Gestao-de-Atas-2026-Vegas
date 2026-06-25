@@ -21,6 +21,7 @@ export const AtasListPage: React.FC = () => {
     atas,
     categorias,
     deleteAta,
+    perfilUsuario,
   } = useData();
 
   const navigate = useNavigate();
@@ -383,21 +384,25 @@ export const AtasListPage: React.FC = () => {
                           <Eye className="w-4 h-4" />
                         </button>
 
-                        <button
-                          onClick={() => navigate(`/atas/${ata.id}/editar`)}
-                          className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50/30 rounded-lg transition-all"
-                          title="Editar ata"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
+                        {perfilUsuario !== 'Leitor' && (
+                          <button
+                            onClick={() => navigate(`/atas/${ata.id}/editar`)}
+                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50/30 rounded-lg transition-all"
+                            title="Editar ata"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        )}
 
-                        <button
-                          onClick={() => setShowDeleteModal(ata.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50/30 rounded-lg transition-all"
-                          title="Excluir ata"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {perfilUsuario === 'Administrador' && (
+                          <button
+                            onClick={() => setShowDeleteModal(ata.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50/30 rounded-lg transition-all"
+                            title="Excluir ata"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
 

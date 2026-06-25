@@ -17,6 +17,7 @@ export const CategoriasPage: React.FC = () => {
     addCategoria,
     updateCategoria,
     deleteCategoria,
+    perfilUsuario,
   } = useData();
 
   // Create Mode states
@@ -92,7 +93,8 @@ export const CategoriasPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
         
-        {/* COL 1: CREATE FORM (1/3 Width) */}
+        {/* COL 1: CREATE FORM (1/3 Width) - oculto para Leitor */}
+        {perfilUsuario !== 'Leitor' && (
         <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm h-fit space-y-4">
           <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5 font-sans">
             <Plus className="w-4 h-4 text-blue-600" />
@@ -165,9 +167,10 @@ export const CategoriasPage: React.FC = () => {
             </button>
           </form>
         </div>
+        )}
 
         {/* COL 2 & 3: CATEGORIES LIST TABLE */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+        <div className={`${perfilUsuario === 'Leitor' ? 'lg:col-span-3' : 'lg:col-span-2'} bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col`}>
           
           <div className="p-6 pb-4 border-b border-gray-50">
             <h4 className="text-base font-bold text-gray-900">Categorias Cadastradas</h4>
@@ -266,7 +269,7 @@ export const CategoriasPage: React.FC = () => {
                               Cancelar
                             </button>
                           </div>
-                        ) : (
+                        ) : perfilUsuario !== 'Leitor' ? (
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleStartEdit(cat)}
@@ -287,7 +290,7 @@ export const CategoriasPage: React.FC = () => {
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                        )}
+                        ) : null}
                       </td>
                     </tr>
                   );
