@@ -171,7 +171,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    supabase.from('atas').select('*').then(({ data }) => {
+    supabase.from('atas').select('*').then(({ data, error }) => {
+      console.log('Atas do Supabase:', data, 'Erro:', error);
       if (data) {
         setAtas(data.map(a => ({
           id: a.id,
