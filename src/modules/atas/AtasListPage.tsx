@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../providers/DataProvider';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx-js-style';
 import {
   FileText,
   Search,
@@ -107,53 +108,124 @@ export const AtasListPage: React.FC = () => {
       return sortOrder === 'desc' ? -comparison : comparison;
     });
 
-  // Export List simulators
+  // Export to a real styled .xlsx (aba "Atas SBS")
   const handleExportExcel = () => {
-    const csvContent = [
-      ["Numero da Ata", "Titulo", "Categoria", "Data", "Presidente", "Status"],
-      ...processedAtas.map(a => [
-        a.numero,
-        `"${a.titulo.replace(/"/g, '""')}"`,
-        categorias.find(c => c.id === a.categoriaId)?.nome || "Geral",
-        a.data,
-        a.presidente,
-        a.status
-      ])
-    ].map(e => e.join(",")).join("\n");
+    const header = ['Nº da Ata', 'Título', 'Categoria', 'Data', 'Presidente', 'Status'];
+    const rows = processedAtas.map(a => [
+      a.numero,
+      a.titulo,
+      categorias.find(c => c.id === a.categoriaId)?.nome || 'Geral',
+      a.data.split('-').reverse().join('/'),
+      a.presidente,
+      a.status,
+    ]);
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `atas_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
 
-  const handleExportPDFList = () => {
-    let pdfSummary = `SISTEMA DE GESTÃO DE ATAS - EXPORT COMPILADO\n`;
-    pdfSummary += `Data de Emissão: ${new Date().toLocaleString()}\n`;
-    pdfSummary += `--------------------------------------------------------\n\n`;
-
-    processedAtas.forEach((a, i) => {
-      const cat = categorias.find(c => c.id === a.categoriaId)?.nome || "Geral";
-      pdfSummary += `${i + 1}. [${a.status}] ${a.numero}\n`;
-      pdfSummary += `   Título: ${a.titulo}\n`;
-      pdfSummary += `   Categoria: ${cat} | Reunião: ${a.data} às ${a.horario}\n`;
-      pdfSummary += `   Local: ${a.local}\n`;
-      pdfSummary += `   Decisões: ${a.descricao.slice(0, 100)}...\n`;
-      pdfSummary += `--------------------------------------------------------\n\n`;
+    // Largura automática das colunas (com base no conteúdo)
+    ws['!cols'] = header.map((h, col) => {
+      const maxLen = Math.max(h.length, ...rows.map(r => String(r[col] ?? '').length));
+      return { wch: Math.min(Math.max(maxLen + 2, 10), 60) };
     });
 
-    const blob = new Blob([pdfSummary], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `atas_list_pdf_${new Date().toISOString().split('T')[0]}.txt`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const border = {
+      top: { style: 'thin', color: { rgb: 'D1D5DB' } },
+      bottom: { style: 'thin', color: { rgb: 'D1D5DB' } },
+      left: { style: 'thin', color: { rgb: 'D1D5DB' } },
+      right: { style: 'thin', color: { rgb: 'D1D5DB' } },
+    };
+
+    const range = XLSX.utils.decode_range(ws['!ref'] as string);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
+        if (!cell) continue;
+        if (R === 0) {
+          // Cabeçalho: negrito, fundo azul escuro, texto branco
+          cell.s = {
+            font: { bold: true, color: { rgb: 'FFFFFF' } },
+            fill: { fgColor: { rgb: '0F172A' } },
+            alignment: { horizontal: 'left', vertical: 'center' },
+            border,
+          };
+        } else {
+          cell.s = { border, alignment: { vertical: 'center' } };
+        }
+      }
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Atas SBS');
+    XLSX.writeFile(wb, `atas_sbs_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  // Export to a styled HTML document that opens in a new tab and triggers print (Save as PDF)
+  const handleExportPDFList = () => {
+    const esc = (s: string) =>
+      String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c] as string));
+
+    const dataEmissao = new Date().toLocaleString('pt-BR');
+
+    const rowsHtml = processedAtas.map(a => {
+      const cat = categorias.find(c => c.id === a.categoriaId)?.nome || 'Geral';
+      return `<tr>
+        <td>${esc(a.numero)}</td>
+        <td>${esc(a.titulo)}</td>
+        <td>${esc(cat)}</td>
+        <td>${esc(a.data.split('-').reverse().join('/'))}</td>
+        <td>${esc(a.presidente)}</td>
+        <td>${esc(a.status)}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Atas — SBS Participações</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; margin: 40px; }
+  .header h1 { font-size: 28px; font-weight: 800; margin: 0; color: #0f172a; letter-spacing: -0.5px; }
+  .header .sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .header .date { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+  .divider { height: 3px; background: linear-gradient(90deg, #2563eb, #93c5fd); border: none; margin: 18px 0 24px; border-radius: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th { background: #0f172a; color: #fff; text-align: left; padding: 10px 12px; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  .footer { margin-top: 28px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; text-align: center; }
+  @media print {
+    body { margin: 12mm; }
+    thead th, tbody tr:nth-child(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>SBS Participações</h1>
+    <div class="sub">Portal de Transparência — Gestão de Atas</div>
+    <div class="date">Emitido em ${esc(dataEmissao)}</div>
+  </div>
+  <hr class="divider" />
+  <table>
+    <thead>
+      <tr>
+        <th>Nº da Ata</th><th>Título</th><th>Categoria</th><th>Data</th><th>Presidente</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+  <div class="footer">Documento gerado pelo Sistema de Gestão de Atas — SBS Participações</div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    win.print();
   };
 
   const handleDeleteConfirm = () => {
